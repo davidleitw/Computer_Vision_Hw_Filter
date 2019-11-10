@@ -32,7 +32,7 @@ class Filters():
             ----------
         '''
         if not isinstance(kernel, np.ndarray):
-            raise Exception('Kernel must be a ndarray. Please check again. ')
+            raise TypeError('Kernel must be a ndarray. Please check again. ')
         if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
             raise Exception('The kernel size must be odd. it should be an n * n np.ndarray. ')
         
@@ -84,10 +84,14 @@ class Filters():
         new_image  = np.zeros((new_length, new_width), dtype=np.float32) if gray is True else np.zeros((new_length, new_width, image.shape[2]), dtype=np.float32)
         
         if gray is True:   # gray
-            pass
+            for x in range(length):
+                for y in range(width):
+                    new_image[x + pad_width[0], y + pad_width[1]] = image[x, y]
+
         elif gray is False: # normal
-            pass
-        
+            for x in range(length):
+                for y in range(width):
+                    new_image[x + pad_width[0], y + pad_width[1], :] = image[x, y, :]
         
         return new_image
 

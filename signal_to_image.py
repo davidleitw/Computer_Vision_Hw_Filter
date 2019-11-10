@@ -55,16 +55,17 @@ def Image_from_Signal(Input, Image_show=True, Image_info_show=True)->np.ndarray:
 
 if __name__ == '__main__':
     image = cv2.imread('Lena_color.bmp')
-    Kh=np.array([[-1,-2,-1],
+    
+    gx=np.array([[-1,-2,-1],
                 [ 0, 0, 0],
                 [ 1, 2, 1]])
 
-    Kv=np.array([[-1, 0, 1],
+    gy=np.array([[-1, 0, 1],
                 [-2, 0, 2],
                 [-1, 0, 1]])
 
-    himage = cv2.filter2D(image * 1., cv2.CV_64F, Kh)
-    vimage = cv2.filter2D(image * 1., cv2.CV_64F, Kv)
+    himage = cv2.filter2D(image * 1., cv2.CV_64F, gx)
+    vimage = cv2.filter2D(image * 1., cv2.CV_64F, gy)
     print(f'himage dtype = {himage.dtype}, vimage dtype = {vimage.dtype}')
 
 
