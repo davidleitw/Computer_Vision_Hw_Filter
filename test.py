@@ -5,36 +5,25 @@ from filter import Filters
 if __name__ == '__main__':
 
     image = cv2.imread('RGBvalue_4_6-gray.bmp', 0)
+    
     print(image.shape, image.ndim)
     F = Filters()
-    
-    idx = 1
-    for x in range(4):
-        for y in range(6):
-            image[x, y] = idx
-            idx = idx + 1
-    
-    
-
-    #print(f'image = {image}')
-    #new = F.filter2D(image, gray=True)
+    #print(image)
+    image = F.padding(image, 2, True)
+    #print(image, '\n')
+    image = F.signal_function(image, Image_show=False, Image_info_show=True)
+    print(image)
     
     '''
-    image = cv2.imread('Lena_color.bmp', cv2.IMREAD_GRAYSCALE)
-    
-    K = np.array([[ 1, 1, 1, 1, 1],
-                 [ 1, 1, 1, 1, 1],
-                 [ 1, 1, 1, 1, 1],
-                 [ 1, 1, 1, 1, 1],
-                 [ 1, 1, 1, 1, 1]])
-    K = K/25.
-    print(f'before image processing, image shape is {image.shape}')
-    cv2.imshow('before processing', image)
-    
+    idx = 0
+    for x in range(image.shape[0]):
+        for y in range(image.shape[1]):
+            image[x, y] = idx
+            idx = idx + 1
 
-    image = cv2.filter2D(image, ddepth=-1, kernel=K)
-    print(f'image shape is {image.shape}')
-    cv2.imshow('image', image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    print(image)
+    #  if x not in range(1, 3),  if y not in range(1, 5)
+    a = [x for x in range(4)]
+    row = image[a, 1]
+    print(row)
     '''

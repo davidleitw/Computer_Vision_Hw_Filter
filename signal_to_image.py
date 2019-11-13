@@ -1,10 +1,10 @@
-import cv2
+from cv2 import cv2
 import numpy as np
 import os 
 from skimage import img_as_ubyte
 
 
-def Image_from_Signal(Input, Image_show=True, Image_info_show=True)->np.ndarray:
+def Image_from_Signal(Input=None, Image_show:bool=True, Image_info_show:bool=True)->np.ndarray:
     # check Image whether or not is an image. 
     global Image
     if isinstance(Input, np.ndarray):
