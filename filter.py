@@ -47,27 +47,26 @@ class Filters(object):
         kernel_size = kernel.shape[0]
         kernel_flatten = kernel.flatten()
         p_width = kernel_size // 2
-
-        image = self.padding(src, pad_width=p_width, gray=gray)
-        new_image = np.asarray(src)
-        
         begin = time.time()
+        image = self.padding(src, pad_width=p_width, gray=gray)
+        new_image = np.array(src)
+        
+        
         if gray is True:
             for x in range(length):
                 for y in range(width):
                     filter_area = image[x:x+kernel_size, y:y+kernel_size]
-                    new_image[x, y] = filter_area.flatten() * kernel_flatten
+                    new_image[x, y] = (filter_area.flatten() * kernel_flatten).sum()
                     
         else:
             for x in range(length):
                 for y in range(width):
                     for channel in range(src.ndim):
                         filter_area = image[x:x+kernel_size, y:y+kernel_size, channel]
-                        new_image[x, y, channel] = filter_area.flatten() * kernel_flatten
+                        new_image[x, y, channel] = (filter_area.flatten() * kernel_flatten).sum()
 
         end = time.time()
         self.execution_time = (end - begin)
-        
         # Change singal to image. 
         #new_image = Image_from_Signal(new_image, Image_show=False, Image_info_show=False)
         new_image = self.signal_function(new_image, Image_show=False, Image_info_show=False)

@@ -25,13 +25,16 @@ def Image_from_Signal(Input=None, Image_show:bool=True, Image_info_show:bool=Tru
                 ", please check again(Input an image or a path). ".format(type(Input))
             )
     
-    #type_info = np.iinfo(Image.dtype)
     Image = Image.astype(np.float64)
-    #Image = Image / type_info.max    # [0 ~ 1]
     Image = Image / Image.max()
     Image = Image * 255              # [0 ~ 255]
     Image = Image.astype(np.uint8)
-
+    '''
+    Image = np.abs(Image)
+    Image = (Image - np.min(Image)) / (np.max(Image) - np.min(Image)) * 255
+    Image = np.round(Image)
+    Image.astype(np.uint8)
+    '''
     if Image_info_show is True:
         # if input is an image path, show that path. 
         print('*' * 10 + ' ' + 'Image_information' + ' ' + '*' * 10)
