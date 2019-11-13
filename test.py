@@ -9,21 +9,17 @@ if __name__ == '__main__':
     print(image.shape, image.ndim)
     F = Filters()
     #print(image)
-    image = F.padding(image, 2, True)
+    #image = F.padding(image, 2, True)
     #print(image, '\n')
-    image = F.signal_function(image, Image_show=False, Image_info_show=True)
-    print(image)
+    #image = F.signal_function(image, Image_show=False, Image_info_show=True)
+    #print(image)
     
-    '''
-    idx = 0
-    for x in range(image.shape[0]):
-        for y in range(image.shape[1]):
-            image[x, y] = idx
+    img = np.ones((2, 4))
+    idx = 1
+    for i in range(2):
+        for j in range(4):
+            img[i, j] = idx
             idx = idx + 1
-
-    print(image)
-    #  if x not in range(1, 3),  if y not in range(1, 5)
-    a = [x for x in range(4)]
-    row = image[a, 1]
-    print(row)
-    '''
+    print(img)
+    img = F.padding(img, 2, True)
+    

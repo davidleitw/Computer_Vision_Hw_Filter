@@ -95,12 +95,9 @@ class Filters(object):
                     new_image[x + pad_width, y + pad_width] = image[x, y]
             
             start = pad_width - 1
-            
-            w1_shift = width + 1
+            w1_shift = width  + 1
             l1_shift = length + 1
-            pad_turn = 0
             
-            print(new_image)
             while start >= 0:
                 new_image[start, start] = new_image[start + 1, start + 1]
                 
@@ -109,25 +106,42 @@ class Filters(object):
                     new_image[start, start + x] = new_image[start + 1, start + x]
                 for x in range(l1_shift):
                     new_image[start + x, start + w1_shift] = new_image[start + x, start + w1_shift - 1]
-                for x in range(l1_shift + 1, 0, -1):
-                    print(f'x = {x}')
-                    #new_image[start + l1_shift, start + w1_shift]
-
+                for x in range(start + w1_shift, start, -1):
+                    new_image[start + l1_shift, x] = new_image[start + l1_shift - 1, x]
+                for x in range(start + l1_shift, start, -1):
+                    new_image[x, start] = new_image[x, start + 1]
                 
-                print(f'w1_shift = {w1_shift}, l1_shift = {l1_shift}')
+                #print(f'w1_shift = {w1_shift}, l1_shift = {l1_shift}')
                 w1_shift = w1_shift + 2
                 l1_shift = l1_shift + 2
                 start = start - 1
-                print(new_image)
-
-
-                
-
             print(new_image)
+
         else:              # normal
             for x in range(length):
                 for y in range(width):
                     new_image[x + pad_width, y + pad_width, :] = image[x, y, :]
+            
+            start = pad_width - 1
+            w1_shift = width  + 1
+            l1_shift = length + 1
+            
+            while start >= 0:
+                new_image[start, start] = new_image[start + 1, start + 1]
+                
+                for x in range(1, w1_shift):
+                    new_image[start, start + x, :] = new_image[start + 1, start + x, :]
+                for x in range(l1_shift):
+                    new_image[start + x, start + w1_shift, :] = new_image[start + x, start + w1_shift - 1, :]
+                for x in range(start + w1_shift, start, -1):
+                    new_image[start + l1_shift, x, :] = new_image[start + l1_shift - 1, x, :]
+                for x in range(start + l1_shift, start, -1):
+                    new_image[x, start, :] = new_image[x, start + 1, :]
+            
+                w1_shift = w1_shift + 2
+                l1_shift = l1_shift + 2
+                start = start - 1
+            print(new_image)
         
         return new_image
 
