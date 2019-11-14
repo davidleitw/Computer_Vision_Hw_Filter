@@ -25,12 +25,13 @@ def Test(image:np.ndarray, kernel:np.ndarray, image_show=False):
     
     print(f'F.filter2D time: {result_time1}')
     print(f'cv2.filter2D time: {result_time2}')
+    print(f'image shape is {image.shape}, {result_image1.shape}, {result_image2.shape}')
 
 kernel_1 = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
 kernel_2 = np.array([[-1, 0, -1], [-2, 0, 2], [-1, 0, 1]])
 blur_kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
 
 if __name__ == '__main__':
-    image = cv2.imread('Lena_color.bmp', 0)
-    # image = cv2.imread('c.png', 0)
+    #image = cv2.imread('Lena_color.bmp')
+    image = cv2.imread('c.png', 0)
     Test(image, kernel=kernel_1, image_show=True)

@@ -35,12 +35,16 @@ def Image_from_Signal(Input=None, Image_show:bool=True, Image_info_show:bool=Tru
     Image = (Image - np.min(Image)) / (np.max(Image) - np.min(Image)) * 255
     Image = np.round(Image)
     Image.astype(np.uint8)
+    
     '''
+    
     Image = Image.astype(np.float64)
     Image = Image + np.abs(np.min(Image))
     Image = Image / np.max(Image)
     Image = Image * 255
     Image = Image.astype(np.uint8)
+    
+    #Image = Image.astype(np.uint8)
 
     if Image_info_show is True:
         # if input is an image path, show that path. 

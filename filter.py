@@ -37,40 +37,37 @@ class Filters(object):
             raise TypeError('Kernel must be a ndarray. Please check again. ')
         if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
             raise ValueError('The kernel size must be odd. it should be an n * n np.ndarray. ')
-        
+        if src.ndim == 3:
+            print(f'Your input has 3 channels {src.shape}.')
+            src = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+            print(f'Converted to gray channels, shape is {src.shape}.')
+            
         self.input_image = src
         self.input_shape = src.shape
         self.filter_kernel = kernel
 
-        gray = True if src.ndim == 2 else False
         length, width = self.input_shape[0], self.input_shape[1]
         kernel_size = kernel.shape[0]
-        kernel_flatten = kernel.flatten()
         p_width = kernel_size // 2
         begin = time.time()
-        image = self.padding(src, pad_width=p_width, gray=gray)
+        image = self.padding(src, pad_width=p_width, mode='mirror')
         new_image = np.array(src)
         
-        
-        if gray is True:
-            for x in range(length):
-                for y in range(width):
-                    filter_area = image[x:x+kernel_size, y:y+kernel_size]
-                    new_image[x, y] = np.abs((filter_area.flatten() * kernel_flatten).sum())
+        for x in range(length):
+            for y in range(width):
+                filter_area = image[x:x+kernel_size, y:y+kernel_size]
+                    #new_image[x, y] = np.abs((filter_area.flatten() * kernel_flatten).sum())
+                    #new_image[x, y] = np.abs((filter_area * kernel).sum())
+                value = (filter_area * kernel).sum() 
+                new_image[x, y] = value if value >= 0 else 0
                     
-        else:
-            for x in range(length):
-                for y in range(width):
-                    for channel in range(src.ndim):
-                        filter_area = image[x:x+kernel_size, y:y+kernel_size, channel]
-                        new_image[x, y, channel] = np.abs((filter_area.flatten() * kernel_flatten).sum())
 
         end = time.time()
         self.execution_time = (end - begin)
         # Change singal to image. 
         #new_image = Image_from_Signal(new_image, Image_show=False, Image_info_show=False)
-        #new_image = self.signal_function(new_image, Image_show=False, Image_info_show=False)
-        new_image = new_image.astype(np.uint8)
+        new_image = self.signal_function(new_image, Image_show=False, Image_info_show=False)
+        # new_image = new_image.astype(np.uint8)
         self.output_image = new_image
         self.output_shape = self.output_image.shape
 
@@ -79,7 +76,7 @@ class Filters(object):
         
         return new_image
             
-    def padding(self, image:np.ndarray, pad_width:int=0, gray:bool=False)->np.ndarray:
+    def padding(self, image:np.ndarray, pad_width:int=0, mode:str='mirror')->np.ndarray:
         '''
             return the image what after filter, the shape will not be changed. 
         '''
@@ -88,17 +85,17 @@ class Filters(object):
 
         new_length = length + pad_width * 2
         new_width  = width  + pad_width * 2
-        new_image  = np.zeros((new_length, new_width), dtype=np.float32) if gray is True else np.zeros((new_length, new_width, image.shape[2]), dtype=np.float32)
+        new_image  = np.zeros((new_length, new_width), dtype=np.float32)
         
-        if gray is True:   # gray
+        if mode is 'mirror':
             for x in range(length):
                 for y in range(width):
                     new_image[x + pad_width, y + pad_width] = image[x, y]
-            
+                
             start = pad_width - 1
             w1_shift = width  + 1
             l1_shift = length + 1
-            
+                
             while start >= 0:
                 new_image[start, start] = new_image[start + 1, start + 1]
                 
@@ -116,33 +113,9 @@ class Filters(object):
                 w1_shift = w1_shift + 2
                 l1_shift = l1_shift + 2
                 start = start - 1
-            #print(new_image)
-
-        else:              # normal
-            for x in range(length):
-                for y in range(width):
-                    new_image[x + pad_width, y + pad_width, :] = image[x, y, :]
-            
-            start = pad_width - 1
-            w1_shift = width  + 1
-            l1_shift = length + 1
-            
-            while start >= 0:
-                new_image[start, start] = new_image[start + 1, start + 1]
-                
-                for x in range(1, w1_shift):
-                    new_image[start, start + x, :] = new_image[start + 1, start + x, :]
-                for x in range(l1_shift):
-                    new_image[start + x, start + w1_shift, :] = new_image[start + x, start + w1_shift - 1, :]
-                for x in range(start + w1_shift, start, -1):
-                    new_image[start + l1_shift, x, :] = new_image[start + l1_shift - 1, x, :]
-                for x in range(start + l1_shift, start, -1):
-                    new_image[x, start, :] = new_image[x, start + 1, :]
-            
-                w1_shift = w1_shift + 2
-                l1_shift = l1_shift + 2
-                start = start - 1
-            #print(new_image)
+                #print(new_image)
+        elif mode is 'zero':
+            new_image[pad_width: new_length - pad_width, pad_width: new_width - pad_width] = image
         
         return new_image
 
@@ -172,4 +145,6 @@ class Filters(object):
         print(f'Total execution time: {self.execution_time} seconds. ')
         print('*' * 10)
 
+    def testfunction(self)->None:
+        pass
     
