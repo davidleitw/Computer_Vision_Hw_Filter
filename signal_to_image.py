@@ -25,16 +25,23 @@ def Image_from_Signal(Input=None, Image_show:bool=True, Image_info_show:bool=Tru
                 ", please check again(Input an image or a path). ".format(type(Input))
             )
     
+    '''
     Image = Image.astype(np.float64)
     Image = Image / Image.max()
     Image = Image * 255              # [0 ~ 255]
     Image = Image.astype(np.uint8)
-    '''
+    
     Image = np.abs(Image)
     Image = (Image - np.min(Image)) / (np.max(Image) - np.min(Image)) * 255
     Image = np.round(Image)
     Image.astype(np.uint8)
     '''
+    Image = Image.astype(np.float64)
+    Image = Image + np.abs(np.min(Image))
+    Image = Image / np.max(Image)
+    Image = Image * 255
+    Image = Image.astype(np.uint8)
+
     if Image_info_show is True:
         # if input is an image path, show that path. 
         print('*' * 10 + ' ' + 'Image_information' + ' ' + '*' * 10)
@@ -57,7 +64,7 @@ def Image_from_Signal(Input=None, Image_show:bool=True, Image_info_show:bool=Tru
     return Image
 
 if __name__ == '__main__':
-    image = cv2.imread('Lena_color.bmp')
+    image = cv2.imread('Lena_color.bmp', 0)
     
     gx=np.array([[-1,-2,-1],
                 [ 0, 0, 0],
@@ -82,31 +89,3 @@ if __name__ == '__main__':
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-
-
-    '''
-    # two test input check our function
-    Image_path = 'Lena_color.bmp'
-    Image_1 = cv2.imread(Image_path)
-
-    print(Image_1.max(), Image_1.min())
-    Image_2 = Image_1.astype(np.float) * 1.89 # change to signal 
-    print(Image_2.max(), Image_2.min())
-    
-    print(Image_2)
-    result = Image_from_Signal(Image_2, Image_show=False) # turn signal to image
-    #print(np.sum(Image_2 == result))
-    #print('pixes num = {}'.format(Image_1.shape[0] * Image_1.shape[1] * Image_1.shape[2]))
-    #print(np.sum(Image_1 == Image_2))
-    #print(np.sum(Image_1 == result))
-    #print(result.max(), result.min())
-    cv2.imshow('result_1', Image_1)
-    cv2.imshow('result_2', Image_2)
-    cv2.imshow('after processing', result)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    
-    # Image_path_result = Image_from_Signal(Image_path)
-
-    #Image_1_result = Image_from_Signal(Image_1)
-    '''

@@ -39,11 +39,11 @@ class Filters(object):
             raise ValueError('The kernel size must be odd. it should be an n * n np.ndarray. ')
         
         self.input_image = src
-        self.image_shape = src.shape
+        self.input_shape = src.shape
         self.filter_kernel = kernel
 
         gray = True if src.ndim == 2 else False
-        length, width = self.image_shape[0], self.image_shape[1]
+        length, width = self.input_shape[0], self.input_shape[1]
         kernel_size = kernel.shape[0]
         kernel_flatten = kernel.flatten()
         p_width = kernel_size // 2
@@ -56,21 +56,23 @@ class Filters(object):
             for x in range(length):
                 for y in range(width):
                     filter_area = image[x:x+kernel_size, y:y+kernel_size]
-                    new_image[x, y] = (filter_area.flatten() * kernel_flatten).sum()
+                    new_image[x, y] = np.abs((filter_area.flatten() * kernel_flatten).sum())
                     
         else:
             for x in range(length):
                 for y in range(width):
                     for channel in range(src.ndim):
                         filter_area = image[x:x+kernel_size, y:y+kernel_size, channel]
-                        new_image[x, y, channel] = (filter_area.flatten() * kernel_flatten).sum()
+                        new_image[x, y, channel] = np.abs((filter_area.flatten() * kernel_flatten).sum())
 
         end = time.time()
         self.execution_time = (end - begin)
         # Change singal to image. 
         #new_image = Image_from_Signal(new_image, Image_show=False, Image_info_show=False)
-        new_image = self.signal_function(new_image, Image_show=False, Image_info_show=False)
+        #new_image = self.signal_function(new_image, Image_show=False, Image_info_show=False)
+        new_image = new_image.astype(np.uint8)
         self.output_image = new_image
+        self.output_shape = self.output_image.shape
 
         if unit_test is True:
             self.filter2D_test()
@@ -114,7 +116,7 @@ class Filters(object):
                 w1_shift = w1_shift + 2
                 l1_shift = l1_shift + 2
                 start = start - 1
-            print(new_image)
+            #print(new_image)
 
         else:              # normal
             for x in range(length):
@@ -140,7 +142,7 @@ class Filters(object):
                 w1_shift = w1_shift + 2
                 l1_shift = l1_shift + 2
                 start = start - 1
-            print(new_image)
+            #print(new_image)
         
         return new_image
 
@@ -148,7 +150,7 @@ class Filters(object):
         '''
             return the last image shape what your input.  
         '''
-        return (self.image_shape)
+        return (self.input_shape, self.output_shape)
 
     def particular_filter2D(self, src:np.ndarray, mode:str='identity')->np.ndarray:
         pass
