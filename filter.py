@@ -2,13 +2,13 @@ import time
 import numpy as np
 from cv2 import cv2
 from signal_to_image import Image_from_Signal
-
-# def filter2D(src, kernel, padding=True)
+from config import filter_list
 
 class Filters(object):
     def __init__(self):
         self.execution_time = 0
         self.signal_function = Image_from_Signal
+        self.flist = filter_list()
 
     def filter2D(self, src:np.ndarray, kernel:np.ndarray=np.ones((3, 3), dtype=np.uint8), padding:bool=True, unit_test:bool=False)->np.ndarray:
         '''
@@ -32,9 +32,8 @@ class Filters(object):
             ----------
         '''
         assert type(src) is np.ndarray, 'Input should be an ndarray. '
-        
-        if not isinstance(kernel, np.ndarray):
-            raise TypeError('Kernel must be a ndarray. Please check again. ')
+        assert type(kernel) is np.ndarray, 'Kernel must be a ndarray. Please check again. '
+
         if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
             raise ValueError('The kernel size must be odd. it should be an n * n np.ndarray. ')
         if src.ndim == 3:
@@ -49,25 +48,21 @@ class Filters(object):
         length, width = self.input_shape[0], self.input_shape[1]
         kernel_size = kernel.shape[0]
         p_width = kernel_size // 2
-        begin = time.time()
+        
         image = self.padding(src, pad_width=p_width, mode='mirror')
         new_image = np.array(src)
-        
+
+        begin = time.time()
         for x in range(length):
             for y in range(width):
                 filter_area = image[x:x+kernel_size, y:y+kernel_size]
-                    #new_image[x, y] = np.abs((filter_area.flatten() * kernel_flatten).sum())
-                    #new_image[x, y] = np.abs((filter_area * kernel).sum())
                 value = (filter_area * kernel).sum() 
                 new_image[x, y] = value if value >= 0 else 0
                     
-
         end = time.time()
         self.execution_time = (end - begin)
         # Change singal to image. 
-        #new_image = Image_from_Signal(new_image, Image_show=False, Image_info_show=False)
         new_image = self.signal_function(new_image, Image_show=False, Image_info_show=False)
-        # new_image = new_image.astype(np.uint8)
         self.output_image = new_image
         self.output_shape = self.output_image.shape
 
@@ -115,8 +110,10 @@ class Filters(object):
                 start = start - 1
                 #print(new_image)
         elif mode is 'zero':
-            new_image[pad_width: new_length - pad_width, pad_width: new_width - pad_width] = image
-        
+            new_image[pad_width: new_length - pad_width, pad_width: new_width - pad_width] = image  
+        else:
+            raise ValueError('mode error, please check your input string again. ')
+
         return new_image
 
     def get_image_shape(self)->tuple:
@@ -125,8 +122,12 @@ class Filters(object):
         '''
         return (self.input_shape, self.output_shape)
 
+    def get_execution_time(self)->float:
+        return self.execution_time
+
     def particular_filter2D(self, src:np.ndarray, mode:str='identity')->np.ndarray:
-        pass
+        self.filter_kernel = self.flist.get_filter(mode=mode)
+        return self.filter2D(src, self.filter_kernel)
     
     def filter2D_test(self)->None:
         '''
@@ -145,6 +146,3 @@ class Filters(object):
         print(f'Total execution time: {self.execution_time} seconds. ')
         print('*' * 10)
 
-    def testfunction(self)->None:
-        pass
-    

@@ -5,7 +5,21 @@ from skimage import img_as_ubyte
 
 
 def Image_from_Signal(Input=None, Image_show:bool=True, Image_info_show:bool=True)->np.ndarray:
-    # check Image whether or not is an image. 
+    '''
+        Parameters
+            ----------
+                Image: np.ndarray or str
+                    Input an image or a path. 
+                Image_show: bool
+                    For the test, show the image after function processing. 
+                Image_info_show: bool
+                    For the test, show the detail with our input image.                  
+            ----------
+        Return
+            ----------
+                return the image after function processing. 
+            ----------
+    '''
     global Image
     if isinstance(Input, np.ndarray):
         Image = Input
